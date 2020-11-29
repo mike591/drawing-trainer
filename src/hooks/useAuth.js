@@ -8,17 +8,6 @@ import React, {
 import firebase from "firebase/app";
 import "firebase/auth";
 
-const authContext = createContext();
-
-export const ProvideAuth = ({ children }) => {
-  const auth = useProvideAuth();
-  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
-};
-
-export const useAuth = () => {
-  return useContext(authContext);
-};
-
 const useProvideAuth = () => {
   const [user, setUser] = useState();
   const [isLoadingAuth, setIsLoadingAuth] = useState(false);
@@ -71,4 +60,15 @@ const useProvideAuth = () => {
     handleLogin,
     handleLogout,
   };
+};
+
+const authContext = createContext();
+
+export const ProvideAuth = ({ children }) => {
+  const auth = useProvideAuth();
+  return <authContext.Provider value={auth}>{children}</authContext.Provider>;
+};
+
+export const useAuth = () => {
+  return useContext(authContext);
 };

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import App from "components/App";
 import firebase from "firebase/app";
 import "normalize.css";
+import "semantic-ui-css/semantic.min.css";
 import "./main.scss";
 
 firebase.initializeApp({
@@ -16,9 +17,4 @@ firebase.initializeApp({
   measurementId: "G-9XWPZX33MB",
 });
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+ReactDOM.render(<App />, document.getElementById("root"));

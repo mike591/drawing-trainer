@@ -5,15 +5,25 @@ import PageNotFoundPage from "components/PageNotFoundPage";
 import { publicRoutes, privateRoutes } from "utils/routes";
 import PublicRoute from "components/PublicRoute";
 import PrivateRoute from "components/PrivateRoute";
+import BaseLoader from "components/BaseLoader";
 
 const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
         <ProvideAuth>
+          <BaseLoader />
           <Switch>
             {publicRoutes.map((route) => (
               <PublicRoute
+                exact={route.path === "/"}
+                path={route.path}
+                key={route.path}
+                component={route.component}
+              />
+            ))}
+            {privateRoutes.map((route) => (
+              <PrivateRoute
                 exact={route.path === "/"}
                 path={route.path}
                 key={route.path}

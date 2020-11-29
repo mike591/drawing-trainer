@@ -1,0 +1,14 @@
+.LoginPage {
+  display: flex;
+  flex-direction: column;
+
+  .card-title {
+    display: flex;
+    justify-content: center;
+  }
+
+  .login-button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+}
