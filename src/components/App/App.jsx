@@ -14,19 +14,19 @@ const App = () => {
         <ProvideAuth>
           <BaseLoader />
           <Switch>
-            {publicRoutes.map((route) => (
+            {Object.values(publicRoutes).map((route) => (
               <PublicRoute
                 exact={route.path === "/"}
                 path={route.path}
-                key={route.path}
+                key={route.key}
                 component={route.component}
               />
             ))}
-            {privateRoutes.map((route) => (
+            {Object.values(privateRoutes).map((route) => (
               <PrivateRoute
                 exact={route.path === "/"}
                 path={route.path}
-                key={route.path}
+                key={route.key}
                 component={route.component}
               />
             ))}

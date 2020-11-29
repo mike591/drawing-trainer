@@ -3,11 +3,12 @@ import Logo from "components/Logo";
 import { Container, Card, Button } from "semantic-ui-react";
 import { useAuth } from "hooks/useAuth";
 import { Redirect } from "react-router-dom";
+import { privateRoutes } from "utils/routes";
 
 const LoginPage = () => {
   const { user, handleLogin } = useAuth();
   if (user) {
-    return <Redirect to="/home" />;
+    return <Redirect to={privateRoutes.home.path} />;
   }
 
   return (

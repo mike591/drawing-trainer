@@ -4,15 +4,15 @@ import { useAuth } from "hooks/useAuth";
 
 const BaseLoader = () => {
   const { isLoadingAuth } = useAuth();
-  return (
-    <div>
-      {isLoadingAuth && (
-        <Dimmer className="BaseLoader" active>
-          <Loader />
-        </Dimmer>
-      )}
-    </div>
-  );
+  if (isLoadingAuth) {
+    return (
+      <Dimmer className="BaseLoader" active>
+        <Loader />
+      </Dimmer>
+    );
+  } else {
+    return null;
+  }
 };
 
 export default BaseLoader;

@@ -1,0 +1,14 @@
+.HomePage {
+  .navigation {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+  }
+
+  .ui.button {
+    margin-bottom: 1rem;
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+}
