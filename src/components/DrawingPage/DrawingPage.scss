@@ -1,0 +1,18 @@
+.DrawingPage {
+  .ui.icon.button {
+    margin: 0;
+  }
+
+  .return-button {
+    align-self: flex-start;
+  }
+
+  .prompt-controls {
+    width: 100%;
+  }
+
+  .randomize-button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+}
