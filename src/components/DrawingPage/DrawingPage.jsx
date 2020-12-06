@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, createRef } from "react";
 import {
   Container,
   Segment,
@@ -25,6 +25,8 @@ const DrawingPage = () => {
   const [activeAdjective, setActiveAdjective] = useState();
 
   const [promptConfirmed, setPromptConfirmed] = useState(false);
+
+  const canvasRef = createRef(null);
   const [color, setColor] = useState();
   const [thickness, setThickness] = useState(3);
 
@@ -136,16 +138,34 @@ const DrawingPage = () => {
               <Input
                 label={`Thickness: ${thickness} `}
                 min={1}
-                max={10}
+                max={9}
                 name="thickness"
                 onChange={(e) => setThickness(e.currentTarget.value)}
                 step={1}
                 type="range"
                 value={thickness}
               />
+              <Divider horizontal />
+              <Button
+                icon
+                labelPosition="right"
+                onClick={() => {
+                  const canvas = canvasRef.current;
+                  const context = canvas.getContext("2d");
+                  context.clearRect(0, 0, canvas.width, canvas.height);
+                }}
+              >
+                Clear
+                <Icon name="eraser" />
+              </Button>
+              <Divider horizontal />
+              <Button icon labelPosition="right" disabled>
+                Save
+                <Icon name="save" />
+              </Button>
             </Segment>
             <Segment>
-              <Canvas color={color} thickness={thickness} />
+              <Canvas color={color} thickness={thickness} ref={canvasRef} />
             </Segment>
           </>
         )}

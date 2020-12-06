@@ -1,7 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { forwardRef, useState } from "react";
 
-const Canvas = ({ color = "#000000", thickness = 3 }) => {
-  const canvasRef = useRef(null);
+const Canvas = forwardRef(({ color = "#000000", thickness = 3 }, canvasRef) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -50,6 +49,6 @@ const Canvas = ({ color = "#000000", thickness = 3 }) => {
       onMouseUp={() => setIsDrawing(false)}
     />
   );
-};
+});
 
 export default Canvas;
