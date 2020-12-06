@@ -1,12 +1,20 @@
 import React, { useState } from "react";
-import { Container, Segment, Button, Icon, Header } from "semantic-ui-react";
+import {
+  Container,
+  Segment,
+  Button,
+  Icon,
+  Header,
+  Input,
+  Divider,
+} from "semantic-ui-react";
 import { privateRoutes } from "utils/routes";
 import { useHistory } from "react-router-dom";
 import nouns from "utils/nouns.json";
 import adjectives from "utils/adjectives.json";
 import getRandomFromArray from "utils/getRandomFromArray";
 import Canvas from "components/Canvas";
-import { TwitterPicker } from "react-color";
+import { CompactPicker } from "react-color";
 
 const DrawingPage = () => {
   const history = useHistory();
@@ -18,6 +26,7 @@ const DrawingPage = () => {
 
   const [promptConfirmed, setPromptConfirmed] = useState(false);
   const [color, setColor] = useState();
+  const [thickness, setThickness] = useState(3);
 
   const handleRandomize = () => {
     setPromptConfirmed(false);
@@ -54,16 +63,9 @@ const DrawingPage = () => {
       </Button>
       <Segment.Group className="prompt-controls">
         <Segment color="blue">
-          <div className="randomize-button-wrapper">
+          <div className="center-button">
             <Button onClick={handleRandomize} color="green">
               Randomize
-            </Button>
-            <Button
-              color="blue"
-              disabled={!activeNoun || !activeAdjective || promptConfirmed}
-              onClick={() => setPromptConfirmed(true)}
-            >
-              Confirm Selections
             </Button>
           </div>
         </Segment>
@@ -107,18 +109,43 @@ const DrawingPage = () => {
             })}
           </Segment>
         </Segment.Group>
+        {!promptConfirmed && (
+          <Segment>
+            <div className="center-button">
+              <Button
+                color="blue"
+                disabled={!activeNoun || !activeAdjective || promptConfirmed}
+                onClick={() => setPromptConfirmed(true)}
+              >
+                Confirm Selections
+              </Button>
+            </div>
+          </Segment>
+        )}
       </Segment.Group>
       <Segment.Group className="canvas-wrapper" horizontal>
         {promptConfirmed && (
           <>
             <Segment>
               <Header>Controls</Header>
-              <TwitterPicker
+              <CompactPicker
                 onChangeComplete={(color) => setColor(color.hex)}
+                color={color}
+              />
+              <Divider horizontal />
+              <Input
+                label={`Thickness: ${thickness} `}
+                min={1}
+                max={10}
+                name="thickness"
+                onChange={(e) => setThickness(e.currentTarget.value)}
+                step={1}
+                type="range"
+                value={thickness}
               />
             </Segment>
             <Segment>
-              <Canvas color={color} />
+              <Canvas color={color} thickness={thickness} />
             </Segment>
           </>
         )}

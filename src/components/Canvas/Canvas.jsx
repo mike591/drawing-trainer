@@ -1,37 +1,40 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 
-const Canvas = ({ color = "#000000" }) => {
+const Canvas = ({ color = "#000000", thickness = 3 }) => {
   const canvasRef = useRef(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDrawing, setIsDrawing] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
+  const handleSetPosition = (e) => {
+    const bounds = canvasRef.current.getBoundingClientRect();
 
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    let x = e.pageX - bounds.left - window.scrollX;
+    x /= bounds.width;
+    x *= canvasRef.current.width;
 
-    const x = (position.x - rect.left) * scaleX;
-    const y = (position.y - rect.top) * scaleY;
+    let y = e.pageY - bounds.top - window.scrollY;
+    y /= bounds.height;
+    y *= canvasRef.current.height;
 
-    if (isDrawing) {
-      context.beginPath();
-      context.moveTo(x, y);
-      context.lineCap = "round";
-      context.lineWidth = 3;
-      context.lineTo(x, y);
-      context.strokeStyle = color;
-      context.stroke();
-    }
-  }, [position, isDrawing, color]);
+    setPosition({ x, y });
+    return { x, y };
+  };
 
   const handleMouseMove = (e) => {
-    setPosition({
-      x: e.clientX,
-      y: e.clientY,
-    });
+    if (isDrawing) {
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+
+      context.beginPath();
+      context.lineCap = "round";
+      context.lineWidth = thickness;
+      context.strokeStyle = color;
+
+      context.moveTo(position.x, position.y);
+      const { x, y } = handleSetPosition(e);
+      context.lineTo(x, y);
+      context.stroke();
+    }
   };
 
   return (
@@ -39,7 +42,10 @@ const Canvas = ({ color = "#000000" }) => {
       className="Canvas"
       ref={canvasRef}
       onMouseMove={handleMouseMove}
-      onMouseDown={() => setIsDrawing(true)}
+      onMouseDown={(e) => {
+        setIsDrawing(true);
+        handleSetPosition(e);
+      }}
       onMouseLeave={() => setIsDrawing(false)}
       onMouseUp={() => setIsDrawing(false)}
     />
