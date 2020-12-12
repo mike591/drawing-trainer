@@ -4,6 +4,12 @@ const Canvas = forwardRef(({ color = "#000000", thickness = 3 }, canvasRef) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    canvas.height = canvas.parentElement.clientHeight * 0.75;
+    canvas.width = canvas.parentElement.clientWidth * 0.75;
+  }, []);
+
   const handleSetPosition = (e) => {
     const bounds = canvasRef.current.getBoundingClientRect();
 
@@ -31,6 +37,7 @@ const Canvas = forwardRef(({ color = "#000000", thickness = 3 }, canvasRef) => {
 
       context.moveTo(position.x, position.y);
       const { x, y } = handleSetPosition(e);
+
       context.lineTo(x, y);
       context.stroke();
     }

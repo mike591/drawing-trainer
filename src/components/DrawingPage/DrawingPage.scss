@@ -16,8 +16,15 @@
     justify-content: center;
   }
 
-  .canvas-wrapper {
+  .ui.horizontal.canvas-wrapper {
     width: 100%;
     flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+  }
+
+  ._input.--vertical {
+    display: flex;
+    flex-direction: column;
   }
 }

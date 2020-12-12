@@ -14,7 +14,7 @@ import nouns from "utils/nouns.json";
 import adjectives from "utils/adjectives.json";
 import getRandomFromArray from "utils/getRandomFromArray";
 import Canvas from "components/Canvas";
-import { CompactPicker } from "react-color";
+import { CirclePicker } from "react-color";
 
 const DrawingPage = () => {
   const history = useHistory();
@@ -27,7 +27,7 @@ const DrawingPage = () => {
   const [promptConfirmed, setPromptConfirmed] = useState(false);
 
   const canvasRef = createRef(null);
-  const [color, setColor] = useState();
+  const [color, setColor] = useState("#000000");
   const [thickness, setThickness] = useState(3);
 
   const handleRandomize = () => {
@@ -130,21 +130,46 @@ const DrawingPage = () => {
           <>
             <Segment>
               <Header>Controls</Header>
-              <CompactPicker
+              <CirclePicker
                 onChangeComplete={(color) => setColor(color.hex)}
                 color={color}
+                colors={[
+                  "#f44336",
+                  "#e91e63",
+                  "#9c27b0",
+                  "#673ab7",
+                  "#3f51b5",
+                  "#2196f3",
+                  "#03a9f4",
+                  "#00bcd4",
+                  "#009688",
+                  "#4caf50",
+                  "#8bc34a",
+                  "#cddc39",
+                  "#ffeb3b",
+                  "#ffc107",
+                  "#ff9800",
+                  "#ff5722",
+                  "#795548",
+                  "#607d8b",
+                  "#000000",
+                ]}
+                width="auto"
               />
               <Divider horizontal />
-              <Input
-                label={`Thickness: ${thickness} `}
-                min={1}
-                max={9}
-                name="thickness"
-                onChange={(e) => setThickness(e.currentTarget.value)}
-                step={1}
-                type="range"
-                value={thickness}
-              />
+              <div className="_input --vertical">
+                <div>{`Thickness: ${thickness} `}</div>
+                <Input
+                  min={1}
+                  max={9}
+                  name="thickness"
+                  onChange={(e) => setThickness(e.currentTarget.value)}
+                  step={1}
+                  type="range"
+                  value={thickness}
+                />
+              </div>
+
               <Divider horizontal />
               <Button
                 icon
