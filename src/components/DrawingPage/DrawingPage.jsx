@@ -1,20 +1,11 @@
-import React, { useState, createRef } from "react";
-import {
-  Container,
-  Segment,
-  Button,
-  Icon,
-  Header,
-  Input,
-  Divider,
-} from "semantic-ui-react";
+import React, { useState } from "react";
+import { Container, Segment, Button, Icon, Header } from "semantic-ui-react";
 import { privateRoutes } from "utils/routes";
 import { useHistory } from "react-router-dom";
 import nouns from "utils/nouns.json";
 import adjectives from "utils/adjectives.json";
 import getRandomFromArray from "utils/getRandomFromArray";
 import Canvas from "components/Canvas";
-import { CirclePicker } from "react-color";
 
 const DrawingPage = () => {
   const history = useHistory();
@@ -25,10 +16,6 @@ const DrawingPage = () => {
   const [activeAdjective, setActiveAdjective] = useState();
 
   const [promptConfirmed, setPromptConfirmed] = useState(false);
-
-  const canvasRef = createRef(null);
-  const [color, setColor] = useState("#000000");
-  const [thickness, setThickness] = useState(3);
 
   const handleRandomize = () => {
     setPromptConfirmed(false);
@@ -125,76 +112,7 @@ const DrawingPage = () => {
           </Segment>
         )}
       </Segment.Group>
-      <Segment.Group className="canvas-wrapper" horizontal>
-        {promptConfirmed && (
-          <>
-            <Segment>
-              <Header>Controls</Header>
-              <CirclePicker
-                onChangeComplete={(color) => setColor(color.hex)}
-                color={color}
-                colors={[
-                  "#f44336",
-                  "#e91e63",
-                  "#9c27b0",
-                  "#673ab7",
-                  "#3f51b5",
-                  "#2196f3",
-                  "#03a9f4",
-                  "#00bcd4",
-                  "#009688",
-                  "#4caf50",
-                  "#8bc34a",
-                  "#cddc39",
-                  "#ffeb3b",
-                  "#ffc107",
-                  "#ff9800",
-                  "#ff5722",
-                  "#795548",
-                  "#607d8b",
-                  "#000000",
-                ]}
-                width="auto"
-              />
-              <Divider horizontal />
-              <div className="_input --vertical">
-                <div>{`Thickness: ${thickness} `}</div>
-                <Input
-                  min={1}
-                  max={9}
-                  name="thickness"
-                  onChange={(e) => setThickness(e.currentTarget.value)}
-                  step={1}
-                  type="range"
-                  value={thickness}
-                />
-              </div>
-
-              <Divider horizontal />
-              <Button
-                icon
-                labelPosition="right"
-                onClick={() => {
-                  const canvas = canvasRef.current;
-                  const context = canvas.getContext("2d");
-                  context.clearRect(0, 0, canvas.width, canvas.height);
-                }}
-              >
-                Clear
-                <Icon name="eraser" />
-              </Button>
-              <Divider horizontal />
-              <Button icon labelPosition="right" disabled>
-                Save
-                <Icon name="save" />
-              </Button>
-            </Segment>
-            <Segment>
-              <Canvas color={color} thickness={thickness} ref={canvasRef} />
-            </Segment>
-          </>
-        )}
-      </Segment.Group>
+      {promptConfirmed && <Canvas />}
     </Container>
   );
 };

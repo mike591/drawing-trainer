@@ -1,5 +1,22 @@
 .Canvas {
-  border: 1px solid grey;
-  width: 100%;
-  height: 100%;
+  margin-left: 0;
+  margin-right: 0;
+
+  .paint-area {
+    border: 1px solid grey;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ui.horizontal.canvas-wrapper {
+    width: 100%;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+  }
+
+  ._input.--vertical {
+    display: flex;
+    flex-direction: column;
+  }
 }
