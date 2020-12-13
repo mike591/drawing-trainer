@@ -134,20 +134,13 @@ const Canvas = () => {
           <canvas
             className="paint-area"
             ref={canvasRef}
-            onTouchStart={(e) => {
-              setIsDrawing(true);
-              handleSetPosition(e);
-            }}
             onMouseDown={(e) => {
               setIsDrawing(true);
               handleSetPosition(e);
             }}
             onMouseMove={handleMouseMove}
-            onTouchMove={handleMouseMove}
             onMouseLeave={() => setIsDrawing(false)}
-            onTouchEnd={() => setIsDrawing(false)}
             onMouseUp={() => setIsDrawing(false)}
-            onTouchCancel={() => setIsDrawing(false)}
             width="100"
             height="100"
           />
