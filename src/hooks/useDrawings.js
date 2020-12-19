@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
 
 export const useDrawings = (user) => {
   const [drawings, setDrawings] = useState([]);
@@ -23,9 +25,14 @@ export const useDrawings = (user) => {
     }
   }, [db, user]);
 
-  const saveDrawing = ({ blob, adjective, noun }) => {
-    db.collection("drawings").add({
-      image: blob,
+  const saveDrawing = async ({ blob, adjective, noun }) => {
+    const storageRef = firebase.storage().ref();
+    const fileRef = storageRef.child(uuidv4());
+
+    const snapshot = await fileRef.put(blob);
+    const url = await snapshot.ref.getDownloadURL();
+    return await db.collection("drawings").add({
+      imageUrl: url,
       adjective,
       noun,
       isDeleted: false,

@@ -8,13 +8,21 @@ import {
   Icon,
 } from "semantic-ui-react";
 import { CirclePicker } from "react-color";
+import { useAuth } from "hooks/useAuth";
+import { useDrawings } from "hooks/useDrawings";
+import { useHistory } from "react-router-dom";
+import { privateRoutes } from "utils/routes";
 
-const Canvas = () => {
+const Canvas = ({ noun, adjective }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [color, setColor] = useState("#000000");
   const [thickness, setThickness] = useState(3);
   const [canvasSize, setCanvasSize] = useState({ height: 100, width: 100 });
+  const { user } = useAuth();
+  const { saveDrawing } = useDrawings(user);
+  const [isSaving, setIsSaving] = React.useState();
+  const history = useHistory();
 
   const canvasRef = createRef(null);
 
@@ -64,6 +72,19 @@ const Canvas = () => {
 
       context.lineTo(x, y);
       context.stroke();
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(() => true);
+    const canvas = canvasRef.current;
+    try {
+      await canvas.toBlob(async (blob) => {
+        await saveDrawing({ blob, adjective, noun });
+        history.push(privateRoutes.library.path);
+      });
+    } catch (err) {
+      setIsSaving(() => false);
     }
   };
 
@@ -125,10 +146,16 @@ const Canvas = () => {
             <Icon name="eraser" />
           </Button>
           <Divider horizontal />
-          <Button icon labelPosition="right" disabled>
+          <Button
+            icon
+            labelPosition="right"
+            onClick={handleSave}
+            loading={isSaving}
+          >
             Save
             <Icon name="save" />
           </Button>
+          <Divider horizontal />
         </Segment>
         <Segment>
           <canvas

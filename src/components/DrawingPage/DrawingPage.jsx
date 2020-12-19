@@ -112,7 +112,9 @@ const DrawingPage = () => {
           </Segment>
         )}
       </Segment.Group>
-      {promptConfirmed && <Canvas />}
+      {promptConfirmed && (
+        <Canvas noun={activeNoun} adjective={activeAdjective} />
+      )}
     </Container>
   );
 };
