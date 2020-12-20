@@ -6,6 +6,8 @@ import {
   Header,
   Button,
   Icon,
+  Loader,
+  Dimmer,
 } from "semantic-ui-react";
 import { CirclePicker } from "react-color";
 import { useAuth } from "hooks/useAuth";
@@ -88,8 +90,14 @@ const Canvas = ({ noun, adjective }) => {
     }
   };
 
+  // TODO: try to use base loader instead!
   return (
     <div className="Canvas">
+      {isSaving && (
+        <Dimmer active page>
+          <Loader />
+        </Dimmer>
+      )}
       <Segment.Group className="canvas-wrapper" horizontal>
         <Segment>
           <Header>Controls</Header>

@@ -14,7 +14,7 @@ export const useDrawings = (user) => {
         .collection("drawings")
         .where("uid", "==", user.uid)
         .where("isDeleted", "==", false)
-        .orderBy("createdAt")
+        .orderBy("createdAt", "desc")
         .onSnapshot((snapshot) => {
           setDrawings(
             snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))

@@ -1,0 +1,27 @@
+.LibraryPage {
+  ._header {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .ui.card {
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 2px #d4d4d5;
+    }
+  }
+}
+
+.LibraryPage_modal {
+  .content {
+    height: 75vh;
+  }
+
+  .image {
+    display: flex !important;
+    justify-content: center;
+    width: 100%;
+  }
+}

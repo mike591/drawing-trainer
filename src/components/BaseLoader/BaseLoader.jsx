@@ -6,7 +6,7 @@ const BaseLoader = () => {
   const { isLoadingAuth } = useAuth();
   if (isLoadingAuth) {
     return (
-      <Dimmer className="BaseLoader" active>
+      <Dimmer className="BaseLoader" active page>
         <Loader />
       </Dimmer>
     );
