@@ -1,0 +1,12 @@
+.SharePage {
+  .ui.card {
+    width: 100%;
+  }
+  .image {
+    display: flex !important;
+    justify-content: center;
+    img {
+      width: auto !important;
+    }
+  }
+}
