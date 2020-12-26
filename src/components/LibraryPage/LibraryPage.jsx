@@ -14,12 +14,22 @@ import { useHistory } from "react-router-dom";
 import { useAuth } from "hooks/useAuth";
 import { useDrawings } from "hooks/useDrawings";
 import dayjs from "dayjs";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { publicRoutes } from "utils/routes";
 
 const LibraryPage = () => {
   const history = useHistory();
   const { user } = useAuth();
   const { drawings } = useDrawings(user);
   const [drawing, setDrawing] = React.useState();
+  const [copied, setCopied] = React.useState({});
+
+  const handleSetCopied = (id) => {
+    setCopied((last) => ({ ...last, [id]: true }));
+    window.setTimeout(() => {
+      setCopied((last) => ({ ...last, [id]: false }));
+    }, 1000);
+  };
 
   return (
     <Container className="LibraryPage">
@@ -62,7 +72,18 @@ const LibraryPage = () => {
                 </Card.Content>
                 <Card.Content extra>
                   <div className="_actions">
-                    <Button disabled>Share</Button>
+                    <CopyToClipboard
+                      text={`${window.location.host}${publicRoutes.share.path}?drawingId=${drawing.id}`}
+                      onCopy={() => handleSetCopied(drawing.id)}
+                    >
+                      <Button
+                        color="blue"
+                        onClick={(e) => e.stopPropagation()}
+                        disabled={copied[drawing.id]}
+                      >
+                        {copied[drawing.id] ? "Copied" : "Share"}
+                      </Button>
+                    </CopyToClipboard>
                   </div>
                 </Card.Content>
               </Card>
