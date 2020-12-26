@@ -24,6 +24,7 @@ const Canvas = ({ noun, adjective }) => {
   const { user } = useAuth();
   const { saveDrawing } = useDrawings(user);
   const [isSaving, setIsSaving] = React.useState();
+  const [allowSave, setAllowSave] = React.useState();
   const history = useHistory();
 
   const canvasRef = createRef(null);
@@ -144,10 +145,12 @@ const Canvas = ({ noun, adjective }) => {
           <Button
             icon
             labelPosition="right"
+            color="red"
             onClick={() => {
               const canvas = canvasRef.current;
               const context = canvas.getContext("2d");
               context.clearRect(0, 0, canvas.width, canvas.height);
+              setAllowSave(false);
             }}
           >
             Clear
@@ -157,8 +160,10 @@ const Canvas = ({ noun, adjective }) => {
           <Button
             icon
             labelPosition="right"
+            color="green"
             onClick={handleSave}
             loading={isSaving}
+            disabled={!allowSave}
           >
             Save
             <Icon name="save" />
@@ -172,6 +177,7 @@ const Canvas = ({ noun, adjective }) => {
             onMouseDown={(e) => {
               setIsDrawing(true);
               handleSetPosition(e);
+              setAllowSave(true);
             }}
             onMouseMove={handleMouseMove}
             onMouseLeave={() => setIsDrawing(false)}
