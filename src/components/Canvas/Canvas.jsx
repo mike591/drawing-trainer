@@ -1,4 +1,4 @@
-import React, { useState, createRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Input,
   Divider,
@@ -6,28 +6,15 @@ import {
   Header,
   Button,
   Icon,
-  Loader,
-  Dimmer,
 } from "semantic-ui-react";
 import { CirclePicker } from "react-color";
-import { useAuth } from "hooks/useAuth";
-import { useDrawings } from "hooks/useDrawings";
-import { useHistory } from "react-router-dom";
-import { privateRoutes } from "utils/routes";
 
-const Canvas = ({ noun, adjective }) => {
+const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [color, setColor] = useState("#000000");
   const [thickness, setThickness] = useState(3);
   const [canvasSize, setCanvasSize] = useState({ height: 100, width: 100 });
-  const { user } = useAuth();
-  const { saveDrawing } = useDrawings(user);
-  const [isSaving, setIsSaving] = React.useState();
-  const [allowSave, setAllowSave] = React.useState();
-  const history = useHistory();
-
-  const canvasRef = createRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -78,27 +65,9 @@ const Canvas = ({ noun, adjective }) => {
     }
   };
 
-  const handleSave = async () => {
-    setIsSaving(() => true);
-    const canvas = canvasRef.current;
-    try {
-      await canvas.toBlob(async (blob) => {
-        await saveDrawing({ blob, adjective, noun });
-        history.push(privateRoutes.library.path);
-      });
-    } catch (err) {
-      setIsSaving(() => false);
-    }
-  };
-
   // TODO: try to use base loader instead!
   return (
     <div className="Canvas">
-      {isSaving && (
-        <Dimmer active page>
-          <Loader />
-        </Dimmer>
-      )}
       <Segment.Group className="canvas-wrapper" horizontal>
         <Segment>
           <Header>Controls</Header>
@@ -150,24 +119,15 @@ const Canvas = ({ noun, adjective }) => {
               const canvas = canvasRef.current;
               const context = canvas.getContext("2d");
               context.clearRect(0, 0, canvas.width, canvas.height);
-              setAllowSave(false);
             }}
           >
             Clear
             <Icon name="eraser" />
           </Button>
-          <Divider horizontal />
-          <Button
-            icon
-            labelPosition="right"
-            color="green"
-            onClick={handleSave}
-            loading={isSaving}
-            disabled={!allowSave}
-          >
-            Save
-            <Icon name="save" />
-          </Button>
+          <Divider horizontal section>
+            Actions
+          </Divider>
+          {getActions()}
           <Divider horizontal />
         </Segment>
         <Segment>
@@ -177,7 +137,6 @@ const Canvas = ({ noun, adjective }) => {
             onMouseDown={(e) => {
               setIsDrawing(true);
               handleSetPosition(e);
-              setAllowSave(true);
             }}
             onMouseMove={handleMouseMove}
             onMouseLeave={() => setIsDrawing(false)}
@@ -189,6 +148,6 @@ const Canvas = ({ noun, adjective }) => {
       </Segment.Group>
     </div>
   );
-};
+});
 
 export default Canvas;

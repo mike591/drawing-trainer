@@ -18,7 +18,7 @@ const HomePage = () => {
           fluid
           size="large"
         >
-          Draw
+          {privateRoutes.draw.label}
         </Button>
         <Button
           color="blue"
@@ -27,7 +27,16 @@ const HomePage = () => {
           fluid
           size="large"
         >
-          Library
+          {privateRoutes.library.label}
+        </Button>
+        <Button
+          color="blue"
+          basic
+          onClick={() => history.push(privateRoutes.aIGuess.path)}
+          fluid
+          size="large"
+        >
+          {privateRoutes.aIGuess.label}
         </Button>
         <Button
           color="red"
@@ -36,7 +45,7 @@ const HomePage = () => {
           fluid
           size="large"
         >
-          Exit
+          {publicRoutes.logout.label}
         </Button>
       </Segment>
     </Container>

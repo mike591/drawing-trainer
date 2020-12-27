@@ -1,11 +1,22 @@
-import React, { useState } from "react";
-import { Container, Segment, Button, Icon, Header } from "semantic-ui-react";
+import React, { useState, createRef } from "react";
+import {
+  Container,
+  Segment,
+  Button,
+  Icon,
+  Header,
+  Loader,
+  Dimmer,
+} from "semantic-ui-react";
 import { privateRoutes } from "utils/routes";
 import { useHistory } from "react-router-dom";
 import nouns from "utils/nouns.json";
 import adjectives from "utils/adjectives.json";
 import getRandomFromArray from "utils/getRandomFromArray";
 import Canvas from "components/Canvas";
+
+import { useAuth } from "hooks/useAuth";
+import { useDrawings } from "hooks/useDrawings";
 
 const DrawingPage = () => {
   const history = useHistory();
@@ -16,6 +27,13 @@ const DrawingPage = () => {
   const [activeAdjective, setActiveAdjective] = useState();
 
   const [promptConfirmed, setPromptConfirmed] = useState(false);
+
+  const canvasRef = createRef(null);
+
+  const [isSaving, setIsSaving] = React.useState();
+
+  const { user } = useAuth();
+  const { saveDrawing } = useDrawings(user);
 
   const handleRandomize = () => {
     setPromptConfirmed(false);
@@ -41,8 +59,51 @@ const DrawingPage = () => {
     setAdjectiveOptions(newAdjectiveOptions);
   };
 
+  const handleSave = React.useCallback(() => {
+    const doSave = async () => {
+      const canvas = canvasRef.current;
+      setIsSaving(() => true);
+      try {
+        await canvas.toBlob(async (blob) => {
+          await saveDrawing({
+            blob,
+            adjective: activeAdjective,
+            noun: activeNoun,
+          });
+          history.push(privateRoutes.library.path);
+        });
+      } catch (err) {
+        setIsSaving(() => false);
+      }
+    };
+
+    doSave();
+  }, [activeAdjective, activeNoun, canvasRef, history, saveDrawing]);
+
+  const getActions = React.useCallback(() => {
+    return (
+      <>
+        <Button
+          icon
+          labelPosition="right"
+          color="green"
+          onClick={handleSave}
+          loading={isSaving}
+        >
+          Save
+          <Icon name="save" />
+        </Button>
+      </>
+    );
+  }, [handleSave, isSaving]);
+
   return (
     <Container className="DrawingPage">
+      {isSaving && (
+        <Dimmer active page>
+          <Loader />
+        </Dimmer>
+      )}
       <Button
         className="return-button"
         icon
@@ -113,7 +174,12 @@ const DrawingPage = () => {
         )}
       </Segment.Group>
       {promptConfirmed && (
-        <Canvas noun={activeNoun} adjective={activeAdjective} />
+        <Canvas
+          noun={activeNoun}
+          adjective={activeAdjective}
+          getActions={getActions}
+          ref={canvasRef}
+        />
       )}
     </Container>
   );

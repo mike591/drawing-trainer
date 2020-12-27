@@ -4,6 +4,7 @@ import DrawingPage from "components/DrawingPage";
 import HomePage from "components/HomePage";
 import LibraryPage from "components/LibraryPage";
 import SharePage from "components/SharePage";
+import AIGuessPage from "components/AIGuessPage";
 
 export const publicRoutes = {
   login: {
@@ -44,5 +45,11 @@ export const privateRoutes = {
     label: "Library",
     path: "/library",
     component: LibraryPage,
+  },
+  aIGuess: {
+    key: "aIGuess",
+    label: "AI Guess",
+    path: "/guess",
+    component: AIGuessPage,
   },
 };
