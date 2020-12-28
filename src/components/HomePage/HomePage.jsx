@@ -30,15 +30,6 @@ const HomePage = () => {
           {privateRoutes.library.label}
         </Button>
         <Button
-          color="blue"
-          basic
-          onClick={() => history.push(privateRoutes.aIGuess.path)}
-          fluid
-          size="large"
-        >
-          {privateRoutes.aIGuess.label}
-        </Button>
-        <Button
           color="red"
           basic
           onClick={() => history.push(publicRoutes.logout.path)}
