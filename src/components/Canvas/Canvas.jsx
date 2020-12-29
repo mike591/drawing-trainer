@@ -15,24 +15,72 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
   const [color, setColor] = useState("#000000");
   const [thickness, setThickness] = useState(3);
   const [canvasSize, setCanvasSize] = useState({ height: 100, width: 100 });
+  const [isErasing, setIsErasing] = useState(false);
+  const [points, setPoints] = useState([]);
+  const [triggerRedraw, setTriggerRedraw] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const heightDiff = canvas.parentElement.clientHeight !== canvasSize.height;
-    const widthDiff = canvas.parentElement.clientWidth !== canvasSize.width;
-
-    if (heightDiff || widthDiff) {
-      canvas.height = canvas.parentElement.clientHeight * 0.75;
-      canvas.width = canvas.parentElement.clientWidth * 0.75;
-      setCanvasSize({
-        height: canvas.parentElement.clientHeight,
-        width: canvas.parentElement.clientWidth,
-      });
-      // TODO: redraw here
-    }
+    canvas.height = canvas.parentElement.clientHeight * 0.75;
+    canvas.width = canvas.parentElement.clientWidth * 0.75;
+    setCanvasSize({
+      height: canvas.parentElement.clientHeight,
+      width: canvas.parentElement.clientWidth,
+    });
+    setTriggerRedraw(true);
   }, [canvasRef, canvasSize.height, canvasSize.width]);
 
-  const handleSetPosition = (e) => {
+  const redrawAll = React.useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    if (points.length === 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    points.forEach((point, idx) => {
+      ctx.lineWidth = point.lineWidth;
+      ctx.strokeStyle = point.strokeStyle;
+
+      if (point.mode === "begin") {
+        ctx.beginPath();
+        ctx.moveTo(point.x, point.y);
+      }
+
+      ctx.lineTo(point.x, point.y);
+      if (point.mode === "end" || idx === points.length - 1) {
+        ctx.stroke();
+      }
+    });
+    ctx.stroke();
+    setTriggerRedraw(false);
+  }, [canvasRef, points]);
+
+  useEffect(() => {
+    if (triggerRedraw) {
+      redrawAll();
+    }
+  }, [triggerRedraw, setTriggerRedraw, redrawAll]);
+
+  const handleUndo = () => {
+    setPoints((last) => {
+      let lastBeginIndex;
+      for (let pointIdx = last.length - 1; pointIdx >= 0; pointIdx--) {
+        const point = last[pointIdx];
+        if (point.mode === "begin") {
+          lastBeginIndex = pointIdx;
+          break;
+        }
+      }
+      return last.slice(0, lastBeginIndex);
+    });
+    setTriggerRedraw(true);
+  };
+
+  const getPosition = (e) => {
     const bounds = canvasRef.current.getBoundingClientRect();
 
     let x = e.pageX - bounds.left - window.scrollX;
@@ -43,7 +91,6 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
     y /= bounds.height;
     y *= canvasRef.current.height;
 
-    setPosition({ x, y });
     return { x, y };
   };
 
@@ -54,11 +101,24 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
 
       context.beginPath();
       context.lineCap = "round";
-      context.lineWidth = thickness;
-      context.strokeStyle = color;
+      context.lineWidth = isErasing ? thickness * 2 : thickness;
+      context.strokeStyle = isErasing ? "#FFF" : color;
 
       context.moveTo(position.x, position.y);
-      const { x, y } = handleSetPosition(e);
+
+      const { x, y } = getPosition(e);
+      setPosition({ x, y });
+
+      setPoints((last) => [
+        ...last,
+        {
+          x,
+          y,
+          lineWidth: context.lineWidth,
+          strokeStyle: context.strokeStyle,
+          mode: "draw",
+        },
+      ]);
 
       context.lineTo(x, y);
       context.stroke();
@@ -72,8 +132,11 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
         <Segment>
           <Header>Controls</Header>
           <CirclePicker
-            onChangeComplete={(color) => setColor(color.hex)}
-            color={color}
+            onChangeComplete={(color) => {
+              setColor(color.hex);
+              setIsErasing(false);
+            }}
+            color={isErasing ? "#FFF" : color}
             colors={[
               "#f44336",
               "#e91e63",
@@ -98,6 +161,29 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
             width="auto"
           />
           <Divider horizontal />
+          <Button
+            icon
+            labelPosition="right"
+            toggle
+            color="red"
+            active={isErasing}
+            onClick={() => setIsErasing((last) => !last)}
+          >
+            Erase
+            <Icon name="eraser" />
+          </Button>
+          <Divider horizontal />
+          <Button
+            icon
+            labelPosition="right"
+            color="red"
+            onClick={handleUndo}
+            disabled={!points.length}
+          >
+            Undo
+            <Icon name="undo" />
+          </Button>
+          <Divider horizontal />
           <div className="_input --vertical">
             <div>{`Thickness: ${thickness} `}</div>
             <Input
@@ -114,15 +200,15 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
           <Button
             icon
             labelPosition="right"
-            color="red"
             onClick={() => {
               const canvas = canvasRef.current;
               const context = canvas.getContext("2d");
               context.clearRect(0, 0, canvas.width, canvas.height);
+              setPoints([]);
             }}
           >
             Clear
-            <Icon name="eraser" />
+            <Icon name="trash" />
           </Button>
           <Divider horizontal section>
             Actions
@@ -136,11 +222,37 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
             ref={canvasRef}
             onMouseDown={(e) => {
               setIsDrawing(true);
-              handleSetPosition(e);
+              const { x, y } = getPosition(e);
+              setPosition({ x, y });
+              setPoints((last) => [
+                ...last,
+                {
+                  x,
+                  y,
+                  strokeStyle: isErasing ? "#FFF" : color,
+                  lineWidth: isErasing ? thickness * 2 : thickness,
+                  mode: "begin",
+                },
+              ]);
             }}
             onMouseMove={handleMouseMove}
-            onMouseLeave={() => setIsDrawing(false)}
-            onMouseUp={() => setIsDrawing(false)}
+            onMouseLeave={() => {
+              setIsDrawing(false);
+            }}
+            onMouseUp={(e) => {
+              setIsDrawing(false);
+              const { x, y } = getPosition(e);
+              setPoints((last) => [
+                ...last,
+                {
+                  x,
+                  y,
+                  strokeStyle: isErasing ? "#FFF" : color,
+                  lineWidth: isErasing ? thickness * 2 : thickness,
+                  mode: "end",
+                },
+              ]);
+            }}
             width="100"
             height="100"
           />

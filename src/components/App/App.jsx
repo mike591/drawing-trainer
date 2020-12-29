@@ -6,6 +6,8 @@ import { publicRoutes, privateRoutes } from "utils/routes";
 import PublicRoute from "components/PublicRoute";
 import PrivateRoute from "components/PrivateRoute";
 import BaseLoader from "components/BaseLoader";
+import { isMobile } from "react-device-detect";
+import MobileNotSupportedPage from "components/MobileNotSupportedPage";
 
 const App = () => {
   return (
@@ -14,6 +16,7 @@ const App = () => {
         <ProvideAuth>
           <BaseLoader />
           <Switch>
+            {isMobile && <Route path="*" component={MobileNotSupportedPage} />}
             {Object.values(publicRoutes).map((route) => (
               <PublicRoute
                 exact={route.path === "/"}

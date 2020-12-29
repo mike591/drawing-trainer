@@ -12,6 +12,15 @@
       box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 2px #d4d4d5;
     }
   }
+
+  .image {
+    height: 15rem;
+  }
+
+  ._actions {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 
 .LibraryPage_modal {

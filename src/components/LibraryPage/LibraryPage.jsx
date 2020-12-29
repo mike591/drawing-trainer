@@ -20,7 +20,7 @@ import { publicRoutes } from "utils/routes";
 const LibraryPage = () => {
   const history = useHistory();
   const { user } = useAuth();
-  const { drawings } = useDrawings(user);
+  const { drawings, deleteDrawing } = useDrawings(user);
   const [drawing, setDrawing] = React.useState();
   const [copied, setCopied] = React.useState({});
 
@@ -84,6 +84,16 @@ const LibraryPage = () => {
                         {copied[drawing.id] ? "Copied" : "Share"}
                       </Button>
                     </CopyToClipboard>
+                    <Button
+                      icon
+                      color="red"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteDrawing(drawing.id);
+                      }}
+                    >
+                      <Icon name="trash"></Icon>
+                    </Button>
                   </div>
                 </Card.Content>
               </Card>

@@ -42,5 +42,13 @@ export const useDrawings = (user) => {
     });
   };
 
-  return { drawings, saveDrawing };
+  const deleteDrawing = (id) => {
+    const db = firebase.firestore();
+    db.collection("drawings").doc(id).update({
+      isDeleted: true,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  };
+
+  return { drawings, saveDrawing, deleteDrawing };
 };
