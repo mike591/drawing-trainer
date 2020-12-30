@@ -15,6 +15,10 @@
 
   .image {
     height: 15rem;
+    overflow: hidden;
+    img {
+      object-fit: scale-down;
+    }
   }
 
   ._actions {
@@ -32,5 +36,9 @@
     display: flex !important;
     justify-content: center;
     width: 100%;
+    height: 100%;
+    img {
+      object-fit: scale-down;
+    }
   }
 }

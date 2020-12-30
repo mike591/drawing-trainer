@@ -1,6 +1,7 @@
 .Canvas {
   margin-left: 0;
   margin-right: 0;
+  width: 100%;
 
   .paint-area {
     border: 1px solid grey;
@@ -18,5 +19,11 @@
   ._input.--vertical {
     display: flex;
     flex-direction: column;
+  }
+
+  ._undo-redo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 8px;
   }
 }

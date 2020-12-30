@@ -112,52 +112,60 @@ const DrawingPage = () => {
         <Icon name="arrow left" />
       </Button>
       <Segment.Group className="prompt-controls">
-        <Segment color="blue">
-          <div className="center-button">
-            <Button onClick={handleRandomize} color="green">
-              Randomize
-            </Button>
-          </div>
-        </Segment>
+        {!promptConfirmed && (
+          <Segment color="blue">
+            <div className="center-button">
+              <Button onClick={handleRandomize} color="green">
+                Randomize
+              </Button>
+            </div>
+          </Segment>
+        )}
         <Segment.Group horizontal>
-          <Segment>
-            <Header as="h2">Adjectives</Header>
-            {adjectiveOptions.map((adjectiveOption, idx) => {
-              if (promptConfirmed && adjectiveOption !== activeAdjective) {
-                return null;
-              }
-              return (
-                <Button
-                  color={adjectiveOption === activeAdjective ? "blue" : "grey"}
-                  onClick={() => setActiveAdjective(adjectiveOption)}
-                  key={idx}
-                  basic={adjectiveOption !== activeAdjective}
-                  disabled={promptConfirmed}
-                >
-                  {adjectiveOption}
-                </Button>
-              );
-            })}
-          </Segment>
-          <Segment>
-            <Header as="h2">Nouns</Header>
-            {nounOptions.map((nounOption, idx) => {
-              if (promptConfirmed && nounOption !== activeNoun) {
-                return null;
-              }
-              return (
-                <Button
-                  color={nounOption === activeNoun ? "blue" : "grey"}
-                  onClick={() => setActiveNoun(nounOption)}
-                  key={idx}
-                  basic={nounOption !== activeNoun}
-                  disabled={promptConfirmed}
-                >
-                  {nounOption}
-                </Button>
-              );
-            })}
-          </Segment>
+          {promptConfirmed ? (
+            <Segment>
+              <Header as="h2" className="prompt">
+                {activeAdjective} {activeNoun}
+              </Header>
+            </Segment>
+          ) : (
+            <>
+              <Segment>
+                <Header as="h2">Adjectives</Header>
+                {adjectiveOptions.map((adjectiveOption, idx) => {
+                  return (
+                    <Button
+                      color={
+                        adjectiveOption === activeAdjective ? "blue" : "grey"
+                      }
+                      onClick={() => setActiveAdjective(adjectiveOption)}
+                      key={idx}
+                      basic={adjectiveOption !== activeAdjective}
+                      disabled={promptConfirmed}
+                    >
+                      {adjectiveOption}
+                    </Button>
+                  );
+                })}
+              </Segment>
+              <Segment>
+                <Header as="h2">Nouns</Header>
+                {nounOptions.map((nounOption, idx) => {
+                  return (
+                    <Button
+                      color={nounOption === activeNoun ? "blue" : "grey"}
+                      onClick={() => setActiveNoun(nounOption)}
+                      key={idx}
+                      basic={nounOption !== activeNoun}
+                      disabled={promptConfirmed}
+                    >
+                      {nounOption}
+                    </Button>
+                  );
+                })}
+              </Segment>
+            </>
+          )}
         </Segment.Group>
         {!promptConfirmed && (
           <Segment>

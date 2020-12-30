@@ -17,6 +17,7 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
   const [canvasSize, setCanvasSize] = useState({ height: 100, width: 100 });
   const [isErasing, setIsErasing] = useState(false);
   const [points, setPoints] = useState([]);
+  const [redoPoints, setRedoPoints] = useState([]);
   const [triggerRedraw, setTriggerRedraw] = useState(false);
 
   useEffect(() => {
@@ -66,16 +67,29 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
   }, [triggerRedraw, setTriggerRedraw, redrawAll]);
 
   const handleUndo = () => {
-    setPoints((last) => {
+    setPoints((prevPoints) => {
       let lastBeginIndex;
-      for (let pointIdx = last.length - 1; pointIdx >= 0; pointIdx--) {
-        const point = last[pointIdx];
+      for (let pointIdx = prevPoints.length - 1; pointIdx >= 0; pointIdx--) {
+        const point = prevPoints[pointIdx];
         if (point.mode === "begin") {
           lastBeginIndex = pointIdx;
           break;
         }
       }
-      return last.slice(0, lastBeginIndex);
+      setRedoPoints((prevRedo) => [
+        ...prevRedo,
+        [...prevPoints.slice(lastBeginIndex)],
+      ]);
+      return prevPoints.slice(0, lastBeginIndex);
+    });
+    setTriggerRedraw(true);
+  };
+
+  const handleRedo = () => {
+    setRedoPoints((prevRedo) => {
+      const prevSection = prevRedo.pop();
+      setPoints((prevPoints) => [...prevPoints, ...prevSection]);
+      return prevRedo;
     });
     setTriggerRedraw(true);
   };
@@ -125,7 +139,6 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
     }
   };
 
-  // TODO: try to use base loader instead!
   return (
     <div className="Canvas">
       <Segment.Group className="canvas-wrapper" horizontal>
@@ -142,18 +155,13 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
               "#e91e63",
               "#9c27b0",
               "#673ab7",
-              "#3f51b5",
               "#2196f3",
-              "#03a9f4",
               "#00bcd4",
-              "#009688",
               "#4caf50",
               "#8bc34a",
               "#cddc39",
-              "#ffeb3b",
               "#ffc107",
               "#ff9800",
-              "#ff5722",
               "#795548",
               "#607d8b",
               "#000000",
@@ -173,16 +181,24 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
             <Icon name="eraser" />
           </Button>
           <Divider horizontal />
-          <Button
-            icon
-            labelPosition="right"
-            color="red"
-            onClick={handleUndo}
-            disabled={!points.length}
-          >
-            Undo
-            <Icon name="undo" />
-          </Button>
+          <div className="_undo-redo">
+            <Button
+              icon
+              color="orange"
+              onClick={handleUndo}
+              disabled={!points.length}
+            >
+              <Icon name="undo" />
+            </Button>
+            <Button
+              icon
+              color="orange"
+              onClick={handleRedo}
+              disabled={!redoPoints.length}
+            >
+              <Icon name="redo" />
+            </Button>
+          </div>
           <Divider horizontal />
           <div className="_input --vertical">
             <div>{`Thickness: ${thickness} `}</div>
@@ -205,6 +221,7 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
               const context = canvas.getContext("2d");
               context.clearRect(0, 0, canvas.width, canvas.height);
               setPoints([]);
+              setRedoPoints([]);
             }}
           >
             Clear
@@ -234,6 +251,7 @@ const Canvas = React.forwardRef(({ getActions }, canvasRef) => {
                   mode: "begin",
                 },
               ]);
+              setRedoPoints([]);
             }}
             onMouseMove={handleMouseMove}
             onMouseLeave={() => {
