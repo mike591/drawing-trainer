@@ -20,9 +20,10 @@ import { publicRoutes } from "utils/routes";
 const LibraryPage = () => {
   const history = useHistory();
   const { user } = useAuth();
-  const { drawings, deleteDrawing } = useDrawings(user);
+  const { subscribeToDrawings, deleteDrawing } = useDrawings(user);
   const [drawing, setDrawing] = React.useState();
   const [copied, setCopied] = React.useState({});
+  const drawings = subscribeToDrawings(user);
 
   const handleSetCopied = (id) => {
     setCopied((last) => ({ ...last, [id]: true }));

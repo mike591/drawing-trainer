@@ -1,31 +1,51 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 
-export const useDrawings = (user) => {
-  const [drawings, setDrawings] = useState([]);
+export const useDrawings = () => {
   const db = firebase.firestore();
+  const [drawings, setDrawings] = useState([]);
+  const [drawing, setDrawing] = useState([]);
+
+  const unsubscribeDrawingsRef = useRef(null);
+  const unsubscribeDrawingRef = useRef(null);
 
   useEffect(() => {
-    if (user) {
-      const unsubscribe = db
-        .collection("drawings")
-        .where("uid", "==", user.uid)
-        .where("isDeleted", "==", false)
-        .orderBy("createdAt", "desc")
-        .onSnapshot((snapshot) => {
-          setDrawings(
-            snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-          );
-        });
+    return () => {
+      unsubscribeDrawingsRef.current && unsubscribeDrawingsRef.current();
+      unsubscribeDrawingRef.current && unsubscribeDrawingRef.current();
+    };
+  });
 
-      return unsubscribe;
-    }
-  }, [db, user]);
+  const subscribeToDrawings = (user) => {
+    unsubscribeDrawingsRef.current = db
+      .collection("drawings")
+      .where("uid", "==", user.uid)
+      .where("isDeleted", "==", false)
+      .orderBy("createdAt", "desc")
+      .onSnapshot((snapshot) => {
+        setDrawings(
+          snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        );
+      });
 
-  const saveDrawing = async ({ blob, adjective, noun }) => {
+    return drawings;
+  };
+
+  const subscribeToDrawing = (drawingId) => {
+    unsubscribeDrawingRef.current = db
+      .collection("drawings")
+      .doc(drawingId)
+      .onSnapshot((snapshot) => {
+        setDrawing(snapshot.data());
+      });
+
+    return drawing;
+  };
+
+  const saveDrawing = async ({ blob, adjective, noun, user }) => {
     const storageRef = firebase.storage().ref();
     const fileRef = storageRef.child(uuidv4());
 
@@ -50,5 +70,10 @@ export const useDrawings = (user) => {
     });
   };
 
-  return { drawings, saveDrawing, deleteDrawing };
+  return {
+    saveDrawing,
+    deleteDrawing,
+    subscribeToDrawings,
+    subscribeToDrawing,
+  };
 };

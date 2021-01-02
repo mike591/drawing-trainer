@@ -2,7 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "hooks/useQuery";
 import { publicRoutes } from "utils/routes";
-import { useDrawing } from "hooks/useDrawing";
+import { useDrawings } from "hooks/useDrawings";
 import { Container, Card, Image } from "semantic-ui-react";
 import dayjs from "dayjs";
 
@@ -14,7 +14,8 @@ const SharePage = () => {
     history.push(publicRoutes.login.path);
   }
 
-  const { drawing } = useDrawing(drawingID);
+  const { subscribeToDrawing } = useDrawings();
+  const drawing = subscribeToDrawing(drawingID);
   const prompt = `${drawing.adjective || ""} ${drawing.noun || ""}`;
   const date = dayjs.unix(drawing?.createdAt?.seconds);
 

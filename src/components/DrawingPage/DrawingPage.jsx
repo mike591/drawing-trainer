@@ -33,7 +33,7 @@ const DrawingPage = () => {
   const [isSaving, setIsSaving] = React.useState();
 
   const { user } = useAuth();
-  const { saveDrawing } = useDrawings(user);
+  const { saveDrawing } = useDrawings();
 
   const handleRandomize = () => {
     setPromptConfirmed(false);
@@ -69,6 +69,7 @@ const DrawingPage = () => {
             blob,
             adjective: activeAdjective,
             noun: activeNoun,
+            user,
           });
           history.push(privateRoutes.library.path);
         });
@@ -78,7 +79,7 @@ const DrawingPage = () => {
     };
 
     doSave();
-  }, [activeAdjective, activeNoun, canvasRef, history, saveDrawing]);
+  }, [activeAdjective, activeNoun, canvasRef, history, saveDrawing, user]);
 
   const getActions = React.useCallback(() => {
     return (
