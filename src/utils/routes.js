@@ -4,6 +4,7 @@ import DrawingPage from "components/DrawingPage";
 import HomePage from "components/HomePage";
 import LibraryPage from "components/LibraryPage";
 import SharePage from "components/SharePage";
+import GamePage from "components/GamePage";
 
 export const publicRoutes = {
   login: {
@@ -44,5 +45,11 @@ export const privateRoutes = {
     label: "Library",
     path: "/library",
     component: LibraryPage,
+  },
+  game: {
+    key: "game",
+    label: "Game",
+    path: "/game",
+    component: GamePage,
   },
 };

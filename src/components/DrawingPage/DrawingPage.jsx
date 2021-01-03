@@ -98,6 +98,7 @@ const DrawingPage = () => {
     );
   }, [handleSave, isSaving]);
 
+  // TODO: Move loading into central location
   return (
     <Container className="DrawingPage">
       {isSaving && (
