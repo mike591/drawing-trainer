@@ -1,0 +1,18 @@
+.GamePage {
+  .return-button {
+    align-self: flex-start;
+    margin-bottom: 0.5rem;
+  }
+
+  .__drawing {
+    height: 30rem;
+    object-fit: contain;
+    border: 1px solid gray;
+  }
+  .__nav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}

@@ -24,7 +24,6 @@ const LibraryPage = () => {
   const [drawing, setDrawing] = React.useState();
   const [copied, setCopied] = React.useState({});
   const drawings = subscribeToDrawings(user);
-  console.warn(drawings);
 
   const handleSetCopied = (id) => {
     setCopied((last) => ({ ...last, [id]: true }));

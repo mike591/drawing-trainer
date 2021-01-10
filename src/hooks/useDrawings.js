@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export const useDrawings = () => {
   const db = firebase.firestore();
+  const drawingsRef = db.collection("drawings");
+
   const [drawings, setDrawings] = useState([]);
   const [drawing, setDrawing] = useState([]);
 
@@ -20,8 +22,7 @@ export const useDrawings = () => {
   });
 
   const subscribeToDrawings = (user) => {
-    unsubscribeDrawingsRef.current = db
-      .collection("drawings")
+    unsubscribeDrawingsRef.current = drawingsRef
       .where("uid", "==", user.uid)
       .where("isDeleted", "==", false)
       .orderBy("createdAt", "desc")
@@ -35,8 +36,7 @@ export const useDrawings = () => {
   };
 
   const subscribeToDrawing = (drawingId) => {
-    unsubscribeDrawingRef.current = db
-      .collection("drawings")
+    unsubscribeDrawingRef.current = drawingsRef
       .doc(drawingId)
       .onSnapshot((snapshot) => {
         setDrawing(snapshot.data());
@@ -51,7 +51,7 @@ export const useDrawings = () => {
 
     const snapshot = await fileRef.put(blob);
     const url = await snapshot.ref.getDownloadURL();
-    return await db.collection("drawings").add({
+    return await drawingsRef.add({
       imageUrl: url,
       adjective,
       noun,
@@ -63,11 +63,19 @@ export const useDrawings = () => {
   };
 
   const deleteDrawing = (id) => {
-    const db = firebase.firestore();
-    db.collection("drawings").doc(id).update({
+    drawingsRef.doc(id).update({
       isDeleted: true,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
+  };
+
+  const getDrawingsForReview = () => {
+    return drawingsRef
+      .limit(10)
+      .get()
+      .then((snapshot) => {
+        return snapshot.docs.map((doc) => doc.data());
+      });
   };
 
   return {
@@ -75,5 +83,6 @@ export const useDrawings = () => {
     deleteDrawing,
     subscribeToDrawings,
     subscribeToDrawing,
+    getDrawingsForReview,
   };
 };
