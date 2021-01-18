@@ -72,6 +72,7 @@ export const useDrawings = () => {
   const getDrawingsForReview = () => {
     return drawingsRef
       .limit(10)
+      .where("isDeleted", "==", false)
       .get()
       .then((snapshot) => {
         return snapshot.docs.map((doc) => doc.data());
