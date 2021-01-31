@@ -4,16 +4,28 @@
     margin-bottom: 0.5rem;
   }
 
-  .__drawing {
+  & > .__drawing {
     height: 30rem;
     object-fit: contain;
     border: 1px solid gray;
   }
-  .__nav {
+
+  & > .__actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
     margin: 0.5rem 0;
+
+    & > .__results {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      & > .__continue {
+        margin-top: 0.5rem;
+      }
+    }
   }
 
   ._choices {

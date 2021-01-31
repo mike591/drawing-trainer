@@ -16,6 +16,7 @@ import { useDrawings } from "hooks/useDrawings";
 import dayjs from "dayjs";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { publicRoutes } from "utils/routes";
+import { useReviews } from "hooks/useReviews";
 
 const LibraryPage = () => {
   const history = useHistory();
@@ -24,6 +25,9 @@ const LibraryPage = () => {
   const [drawing, setDrawing] = React.useState();
   const [copied, setCopied] = React.useState({});
   const drawings = subscribeToDrawings(user);
+
+  const { subscribeToAllReviews } = useReviews();
+  const reviews = subscribeToAllReviews();
 
   const handleSetCopied = (id) => {
     setCopied((last) => ({ ...last, [id]: true }));
@@ -63,6 +67,10 @@ const LibraryPage = () => {
         {drawings.map((drawing) => {
           const prompt = `${drawing.adjective} ${drawing.noun}`;
           const date = dayjs.unix(drawing.createdAt.seconds);
+          const drawingReviews = reviews[drawing.id] || [];
+          const numberGuessedCorrect = drawingReviews.filter(
+            (review) => review.didGuessCorrect
+          );
           return (
             <Grid.Column key={drawing.id} onClick={() => setDrawing(drawing)}>
               <Card>
@@ -70,6 +78,10 @@ const LibraryPage = () => {
                 <Card.Content>
                   <Card.Header>{prompt}</Card.Header>
                   <Card.Meta>{date.format("DD/MM/YYYY hh:mm:ssa")}</Card.Meta>
+                  <Card.Meta>
+                    {numberGuessedCorrect.length} / {drawingReviews.length}{" "}
+                    guessed correctly
+                  </Card.Meta>
                 </Card.Content>
                 <Card.Content extra>
                   <div className="_actions">

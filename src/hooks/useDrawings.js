@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
+import { useReviews } from "hooks/useReviews";
 
 export const useDrawings = () => {
   const db = firebase.firestore();
@@ -13,6 +14,8 @@ export const useDrawings = () => {
 
   const unsubscribeDrawingsRef = useRef(null);
   const unsubscribeDrawingRef = useRef(null);
+
+  const { getUserReviews } = useReviews();
 
   useEffect(() => {
     return () => {
@@ -69,13 +72,23 @@ export const useDrawings = () => {
     });
   };
 
-  const getDrawingsForReview = () => {
+  const getDrawingsForReview = async ({ user }) => {
+    const userReviews = await getUserReviews({ user });
+    const drawingIdsAlreadyReviewed = userReviews.reduce(
+      (acc, { drawingId }) => {
+        acc[drawingId] = true;
+        return acc;
+      },
+      {}
+    );
+
     return drawingsRef
-      .limit(10)
       .where("isDeleted", "==", false)
       .get()
       .then((snapshot) => {
-        return snapshot.docs.map((doc) => doc.data());
+        return snapshot.docs
+          .map((doc) => ({ ...doc.data(), id: doc.id }))
+          .filter((doc) => !drawingIdsAlreadyReviewed[doc.id]);
       });
   };
 
